@@ -28,22 +28,22 @@ def pageHome():
                     "Legendary",
                 '</th>',
                 '<td><font face="Verdana" size="10">',
-                    '<a href="/legendary/2">',
+                    '<a href="/legendary/2p">',
                         "2p",
                     '</a>',
                 '</td>',
                 '<td><font face="Verdana" size="10">',
-                    '<a href="/legendary/3">',
+                    '<a href="/legendary/3p">',
                         "3p",
                     '</a>',
                 '</td>',
                 '<td><font face="Verdana" size="10">',
-                    '<a href="/legendary/4">',
+                    '<a href="/legendary/4p">',
                         "4p",
                     '</a>',
                 '</td>',
                 '<td><font face="Verdana" size="10">',
-                    '<a href="/legendary/5">',
+                    '<a href="/legendary/5p">',
                         "5p",
                     '</a>',
                 '</td>',
@@ -145,13 +145,21 @@ coreRokHeroes = coreHeroes + rokHeroes
 def routeLegendaryHome(nbPlayers):
     return pageLegendaryHome(nbPlayers)
 
-@route('/legendary/core/<nbPlayers>')
-def routeLegendaryCore(nbPlayers):
-    return pageLegendaryPick(nbPlayers, coreTitle, coreSchemes, coreMasterminds, coreVillains, coreHenchmen, coreHeroes)
+@route('/legendary/core/mastermind-and-scheme/<nbPlayers>')
+def routeLegendaryCoreMastermindAndScheme(nbPlayers):
+    return pageLegendaryPickMastermindAndScheme(nbPlayers, coreTitle, coreMasterminds, coreSchemes, 'core')
 
-@route('/legendary/core-rok/<nbPlayers>')
-def routeLegendaryCoreRok(nbPlayers):
-    return pageLegendaryPick(nbPlayers, coreRokTitle, coreRokSchemes, coreRokMasterminds, coreRokVillains, coreRokHenchmen, coreRokHeroes)
+@route('/legendary/core-rok/mastermind-and-scheme/<nbPlayers>')
+def routeLegendaryCoreRokMastermindAndScheme(nbPlayers):
+    return pageLegendaryPickMastermindAndScheme(nbPlayers, coreRokTitle, coreRokMasterminds, coreRokSchemes, 'core-rok')
+
+@route('/legendary/core/all/<nbPlayers>/<mastermindIndex>/<schemeIndex>')
+def routeLegendaryCoreAll(nbPlayers, mastermindIndex, schemeIndex):
+    return pageLegendaryPickAll(nbPlayers, coreMasterminds[int(mastermindIndex)], coreSchemes[int(schemeIndex)], coreTitle, coreVillains, coreHenchmen, coreHeroes)
+
+@route('/legendary/core-rok/all/<nbPlayers>/<mastermindIndex>/<schemeIndex>')
+def routeLegendaryCoreRokAll(nbPlayers, mastermindIndex, schemeIndex):
+    return pageLegendaryPickAll(nbPlayers, coreRokMasterminds[int(mastermindIndex)], coreRokSchemes[int(schemeIndex)], coreRokTitle, coreRokVillains, coreRokHenchmen, coreRokHeroes)
 
 # Legendary page : home
 
@@ -159,19 +167,19 @@ def pageLegendaryHome(nbPlayers):
     lines = [
         '<p></p>',
         '<p><h4><font face="Verdana" size="10">',
-            'Legendary - ' + nbPlayers + 'p - Choisis avec ou sans extensions :',
+            'Legendary - ' + nbPlayers + ' - Choisis avec ou sans extensions :',
         '</h4></p>',
         '<table border="0" cellpadding="20">',
             '<tr>',
                 '<td><font face="Verdana" size="10">',
-                    '<a href="/legendary/core/' + nbPlayers + '">',
+                    '<a href="/legendary/core/mastermind-and-scheme/' + nbPlayers + '">',
                         coreTitle,
                     '</a>',
                 '</td>',
             '</tr>',
             '<tr>',
                 '<td><font face="Verdana" size="10">',
-                    '<a href="/legendary/core-rok/' + nbPlayers + '">',
+                    '<a href="/legendary/core-rok/mastermind-and-scheme/' + nbPlayers + '">',
                         coreRokTitle,
                     '</a>',
                 '</td>',
@@ -180,22 +188,12 @@ def pageLegendaryHome(nbPlayers):
         ]
     return "".join(lines)
 
-# Legendary page : pick
+# Legendary page : pick mastermind and scheme
 
-def pageLegendaryPick(nbPlayers, title, schemes, masterminds, villains, henchmen, heroes):
+pickedMastermind = ''
+pickedScheme = ''
 
-    # Setup default number of villains, henchmen, bystanders, heroes, twists
-
-    if(nbPlayers=='2'):
-        nbVillains, nbHenchmen, nbBystanders, nbHeroes = 2, 1, 2, 5
-    elif(nbPlayers=='3'):
-        nbVillains, nbHenchmen, nbBystanders, nbHeroes = 3, 1, 8, 5
-    elif(nbPlayers=='4'):
-        nbVillains, nbHenchmen, nbBystanders, nbHeroes = 3, 2, 8, 5
-    else:
-        nbVillains, nbHenchmen, nbBystanders, nbHeroes = 4, 2, 12, 6
-
-    nbTwists = 8
+def pageLegendaryPickMastermindAndScheme(nbPlayers, title, masterminds, schemes, subpath):
 
     # Pick Mastermind and Scheme
 
@@ -203,11 +201,64 @@ def pageLegendaryPick(nbPlayers, title, schemes, masterminds, villains, henchmen
     pickedScheme = random.choice(schemes)
     print("Picked: ", pickedMastermind, pickedScheme)
 
+    # Display table
+
+    lines = [
+        '<p></p>',
+        '<p><h4><font face="Verdana" size="10">',
+            '&emsp;&emsp;&emsp;Legendary - ' + nbPlayers + ' - ' + title,
+        '</h4></p>',
+        '<table border="1" cellpadding="20">',
+            '<tr>',
+                '<th align="right"><font face="Verdana" size="10">',
+                    'Mastermind',
+                '</th>',
+                '<td><font face="Verdana" size="10">',
+                    pickedMastermind,
+                '</td>',
+            '</tr>',
+            '<tr style="background-color:#eab676;">',
+                '<th align="right"><font face="Verdana" size="10">',
+                    'Scheme',
+                '</th>',
+                '<td><font face="Verdana" size="10">',
+                    pickedScheme,
+                '</td>',
+            '</tr>',
+        '</table>',
+        '<p></p>',
+        '<p><h4><font face="Verdana" size="10">',
+            '&emsp;&emsp;&emsp;Tirage satisfaisant ? ',
+            '<a href="/legendary/' + subpath + '/all/' + nbPlayers + '/' + str(masterminds.index(pickedMastermind)) + '/' + str(schemes.index(pickedScheme)) + '">',
+                "Passer à la suite",
+            '</a>'
+        '</h4></p>',
+        ]
+    return "".join(lines)
+
+# Legendary page : pick all
+
+def pageLegendaryPickAll(nbPlayers, pickedMastermind, pickedScheme, title, villains, henchmen, heroes):
+
+    # Setup default number of villains, henchmen, bystanders, heroes, twists
+
+    if(nbPlayers=='2p'):
+        nbVillains, nbHenchmen, nbBystanders, nbHeroes = 2, 1, 2, 5
+    elif(nbPlayers=='3p'):
+        nbVillains, nbHenchmen, nbBystanders, nbHeroes = 3, 1, 8, 5
+    elif(nbPlayers=='4p'):
+        nbVillains, nbHenchmen, nbBystanders, nbHeroes = 3, 2, 8, 5
+    else:
+        nbVillains, nbHenchmen, nbBystanders, nbHeroes = 4, 2, 12, 6
+
+    nbTwists = 8
+
     # Update according to Mastermind
 
     forcedVillain = ''
     forcedHenchman = ''
     xerogenHenchman = ''
+    weddingHeroes = ''
 
     if (pickedMastermind==coreMasterminds[0]):  # Dr. Doom
         forcedHenchman = coreHenchmen[0]            # Doombot Legion
@@ -238,21 +289,22 @@ def pageLegendaryPick(nbPlayers, title, schemes, masterminds, villains, henchmen
     elif(pickedScheme==coreSchemes[4]): # Secret Invasion of the Skrull Shapeshifters
         nbHeroes += 1
     elif(pickedScheme==coreSchemes[5]): # Super Hero Civil War
-        if(nbPlayers=='2'):
+        if(nbPlayers=='2p'):
             nbHeroes = 4
-        elif(nbPlayers in ['4', '5']):
+        elif(nbPlayers in ['4p', '5p']):
             nbTwists = 5
         else:
             pass
     elif(pickedScheme in (coreSchemes[6], coreSchemes[7])): # The Legacy Virus, Unleash the Power of the Cosmic Cube
         pass
     elif(pickedScheme==rokSchemes[0]): # Devolve with Xerogen Crystals
-        nbTwists = int(nbPlayers) + 3
+        nbTwists = int(nbPlayers[0]) + 3
         nbHenchmen += 1
         xerogenHenchman = 'yes'
     elif(pickedScheme==rokSchemes[1]): # Ruin the Perfect Wedding
         nbTwists = 11
-        nbHeroes += 2 # TODO: should be displayed as extra
+        nbHeroes += 2
+        weddingHeroes = 'yes'
     elif(pickedScheme==rokSchemes[2]): # Tornado of Terrigen Mists
         nbTwists = 10
     elif(pickedScheme==rokSchemes[3]): # War of Kings
@@ -307,14 +359,22 @@ def pageLegendaryPick(nbPlayers, title, schemes, masterminds, villains, henchmen
 
     # Pick heroes
 
-    pickedHeroes = '<br>'.join(random.sample(heroes, nbHeroes))
 
-    # Display the result in a table
+    if weddingHeroes != '':
+        randomHeroes = random.sample(heroes, nbHeroes)
+        randomHeroes[-1] = "Wedding Hero : " + randomHeroes[-1]
+        randomHeroes[-2] = "Wedding Hero : " + randomHeroes[-2]
+        pickedHeroes = '<br>'.join(randomHeroes)
+    else:
+        pickedHeroes = '<br>'.join(random.sample(heroes, nbHeroes))
+
+
+    # Display all in a table
 
     lines = [
         '<p></p>',
         '<p><h4><font face="Verdana" size="10">',
-            '&emsp;&emsp;&emsp;Legendary - ' + nbPlayers + 'p - ' + title,
+            '&emsp;&emsp;&emsp;Legendary - ' + nbPlayers + ' - ' + title,
         '</h4></p>',
         '<table border="1" cellpadding="20">',
             '<tr>',
@@ -376,4 +436,3 @@ def pageLegendaryPick(nbPlayers, title, schemes, masterminds, villains, henchmen
         '</table>',
         ]
     return "".join(lines)
-
